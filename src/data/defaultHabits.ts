@@ -1,87 +1,87 @@
-import type { Habit } from '../types/Habit'
+import type { Habit } from '@/types/Habit'
 
 export const defaultHabits: Habit[] = [
   // Фізичні звички
   {
     id: 'steps_10000',
-    name: 'Ходити — 10 000 кроків',
+    name: 'Walk 10,000 steps',
     type: 'physical',
-    icon: '🚶‍♀️',
+    icon: 'fa-solid fa-shoe-prints',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'jump_rope',
-    name: 'Скакалка — 3 підходи по 5 хвилин',
+    name: 'Jump rope – 3 sets, 5 min each',
     type: 'physical',
-    icon: '🪢',
+    icon: 'fa-solid fa-repeat',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'swimming_40min',
-    name: 'Плавання — 40 хвилин',
+    name: 'Swim 40 minutes',
     type: 'physical',
-    icon: '🏊‍♀️',
+    icon: 'fa-solid fa-water-ladder',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'stretching_60min',
-    name: 'Розтяжка — 60 хвилин',
+    name: 'Stretching 60 minutes',
     type: 'physical',
-    icon: '🤸‍♀️',
+    icon: 'fa-solid fa-moon',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'pullups_pushups',
-    name: 'Віджимання 50 разів + турнік: вис на руках 2 хв + 1 хв',
+    name: '50 push-ups + pull-up holds',
     type: 'physical',
-    icon: '💪',
+    icon: 'fa-solid fa-hands',
     doneToday: false,
-    history: {}
+    history: {},
   },
 
   // Ментальні звички
   {
     id: 'one_coffee',
-    name: 'Лише 1 чашка кави на день',
+    name: 'Only 1 cup of coffee per day',
     type: 'mental',
-    icon: '☕️',
+    icon: 'fa-solid fa-mug-hot',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'meditation_5_10min',
-    name: 'Медитація 5–10 хвилин',
+    name: 'Meditate 5-10 minutes',
     type: 'mental',
-    icon: '🧘‍♀️',
+    icon: 'fa-solid fa-sun',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'scroll_limit_30min',
-    name: 'Ліміт скролінгу — не більше 30 хв на день',
+    name: 'Scroll limit 30 minutes',
     type: 'mental',
-    icon: '📱❌',
+    icon: 'fa-solid fa-mobile',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'reading_10_pages',
-    name: 'Читання 10 сторінок',
+    name: 'Read 10 pages',
     type: 'mental',
-    icon: '📚',
+    icon: 'fa-solid fa-bookmark',
     doneToday: false,
-    history: {}
+    history: {},
   },
   {
     id: 'no_swearing',
-    name: 'Не матюкатися сьогодні',
+    name: 'No swearing',
     type: 'mental',
-    icon: '🤐',
+    icon: 'fa-solid fa-face-smile-wink',
     doneToday: false,
-    history: {}
-  }
+    history: {},
+  },
 ]
