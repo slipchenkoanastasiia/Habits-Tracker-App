@@ -14,6 +14,8 @@ import { ref, watch, onMounted } from 'vue'
 import type { Habit } from '@/types/Habit'
 import { defaultHabits } from '@/data/defaultHabits'
 import HabitItem from './HabitItem.vue'
+import VueCal from 'vue-cal'
+import 'vue-cal/dist/vuecal.css' 
 
 const STORAGE_KEY = 'habits-tracker-data'
 

@@ -12,14 +12,16 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
-    "vue": "^3.5.17"
+    "nodemailer": "^7.0.5",
+    "vue": "^3.5.17",
+    "vue-cal": "^4.10.2"
   },
   "devDependencies": {
     "@types/node": "^24.0.14",
-    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitejs/plugin-vue": "^5.0.4",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4",
+    "vite": "^5.2.10",
     "vue-tsc": "^2.2.12"
   }
 }
