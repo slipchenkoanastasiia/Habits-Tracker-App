@@ -1,16 +1,19 @@
 import nodemailer from 'nodemailer'
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'your.email@gmail.com',    
-    pass: 'your_app_password', 
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 })
 
 async function sendReportEmail(toEmail, reportText) {
   const mailOptions = {
-    from: 'your.email@gmail.com',
+    from: process.env.EMAIL_USER,
     to: toEmail,
     subject: 'Weekly Habit Report',
     text: reportText,
