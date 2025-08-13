@@ -100,10 +100,15 @@ async function sendReport() {
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
   margin-bottom: 0.5rem;
+  border-radius: 6px;
+
+  background: 
+    linear-gradient(white, white) padding-box, /* фон елемента */
+    linear-gradient(to right, red, blue) border-box; /* градієнтна обводка */
+  border: 4px solid transparent;
 }
+
 
 .habit-icon {
   font-size: 1.5rem;

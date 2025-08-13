@@ -5,12 +5,26 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --gradient-dark: linear-gradient(135deg, #000000, #4b0082);
+  --gradient-light: linear-gradient(135deg, #ffffff, #8a2be2);
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background: var(--gradient-dark);
+  color: rgba(255, 255, 255, 0.87);
+  transition: background 0.3s, color 0.3s;
 }
 
 a {
@@ -20,14 +34,6 @@ a {
 }
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -56,6 +62,10 @@ button:focus-visible {
 
 .card {
   padding: 2em;
+  background: rgba(42, 42, 42, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
 }
 
 #app {
@@ -65,15 +75,4 @@ button:focus-visible {
   text-align: center;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+
