@@ -6,6 +6,11 @@
       {{ habit.doneToday ? '✓ Done' : 'Mark as done' }}
     </button>
 
+    <HabitGrid
+      :history="habit.history"
+      @toggle="(date) => toggleDay(date)"
+    />
+
     <button @click="openSendReportModal" class="send-report-btn">Send Report</button>
 
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
@@ -32,6 +37,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { Habit } from '@/types/Habit'
+import HabitGrid from './HabitGrid.vue'
 import { defineEmits } from 'vue'
 
 const props = defineProps<{ habit: Habit }>()
@@ -41,6 +47,13 @@ const emit = defineEmits<{
 
 function toggleDone() {
   emit('toggle-done', props.habit.id)
+}
+
+function toggleDay(date: string) {
+  if (!props.habit.history) {
+    props.habit.history = {}
+  }
+  props.habit.history[date] = !props.habit.history[date]
 }
 
 const showModal = ref(false)
