@@ -1,55 +1,43 @@
-import express from 'express';
-import cors from 'cors';
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-dotenv.config();
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
 
-const app = express();
-const port = process.env.PORT || 5000;
+dotenv.config()
 
-app.use(cors({ origin: 'http://localhost:5173' }));
-app.use(express.json());
+const app = express()
+const port = process.env.PORT || 5000
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}))
 
-async function sendReportEmail(toEmail, reportText) {
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: toEmail,
-    subject: 'Weekly Habit Report',
-    text: reportText,
-  };
+app.options('*', cors())
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info.response);
-  } catch (error) {
-    console.error('Error sending email:', error);
-    throw error;
-  }
-}
+app.use(express.json())
 
-app.post('/send-report', async (req, res) => {
-  const { email, report } = req.body;
+app.use((req, res, next) => {
+  console.log('➡️', req.method, req.url)
+  next()
+})
+
+app.get('/', (req, res) => {
+  res.send('Backend is running 🚀')
+})
+
+app.post('/send-report', (req, res) => {
+  const { email, report } = req.body
+
+  console.log('📩 BODY:', req.body)
 
   if (!email || !report) {
-    return res.status(400).json({ error: 'Email and report text required' });
+    return res.status(400).json({ error: 'Email and report text required' })
   }
 
-  try {
-    await sendReportEmail(email, report);
-    res.status(200).json({ message: 'Email sent successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to send email' });
-  }
-});
+  res.json({ message: 'OK' })
+})
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+  console.log(`🚀 Server running on port ${port}`)
+})
