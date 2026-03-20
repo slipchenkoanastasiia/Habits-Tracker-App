@@ -13,4 +13,3 @@ import HabitList from './components/HabitList.vue'
 <style scoped>
 
 </style>
-

@@ -132,6 +132,3 @@ async function sendReport() {
 }
 </script>
 
-<style scoped>
-
-</style>
