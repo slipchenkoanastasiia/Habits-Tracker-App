@@ -2,11 +2,11 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
-  history: Record<string, boolean>
+  history: Record<string, number>
 }>()
 
 const emit = defineEmits<{
-  (e: 'toggle', date: string): void
+  (e: 'toggle', date: string, value: number): void
 }>()
 
 function getLast7Days() {
@@ -16,7 +16,6 @@ function getLast7Days() {
   for (let i = 6; i >= 0; i--) {
     const d = new Date()
     d.setDate(today.getDate() - i)
-
     days.push(d.toLocaleDateString('en-CA'))
   }
 
@@ -25,8 +24,11 @@ function getLast7Days() {
 
 const days = computed(() => getLast7Days())
 
-function getLevel(done?: boolean) {
-  if (!done) return 'level-0'
+function getLevel(value: number) {
+  if (value === 0) return 'level-0'
+  if (value === 1) return 'level-1'
+  if (value === 2) return 'level-2'
+  if (value === 3) return 'level-3'
   return 'level-4'
 }
 
@@ -37,17 +39,55 @@ function formatDate(date: string) {
 
   return `${day}.${month}`
 }
+
+function handleClick(day: string) {
+  const current = props.history[day] ?? 0
+
+  const next = current === 0 ? 1 : 0
+
+  emit('toggle', day, next)
+}
+
+const progress = computed(() => {
+  const values = days.value.map(d => props.history[d] ?? 0)
+
+  const total = values.length * 4
+  const done = values.reduce((a, b) => a + b, 0)
+
+  return Math.round((done / total) * 100)
+})
+
+const streak = computed(() => {
+  let count = 0
+
+  for (let i = days.value.length - 1; i >= 0; i--) {
+    const day = days.value[i]
+    const val = props.history[day] ?? 0
+
+    if (val > 0) count++
+    else break
+  }
+
+  return count
+})
 </script>
 
 <template>
-  <div class="grid">
-    <div
-  v-for="day in days"
-  :key="day"
-  :class="['cell', getLevel(props.history[day] ?? false)]"
-  @click="emit('toggle', day)"
-  :title="`${formatDate(day)} — ${(props.history[day] ?? false) ? 'Done' : 'Not done'}`"
-/>
+  <div>
+    <div class="stats">
+      <p>Progress: {{ progress }}%</p>
+      <p>🔥 Streak: {{ streak }} days</p>
+    </div>
+
+    <div class="grid">
+      <div
+        v-for="day in days"
+        :key="day"
+        :class="['cell', getLevel(history[day] ?? 0)]"
+        @click="handleClick(day)"
+        :title="`${formatDate(day)} — ${(history[day] ?? 0) > 0 ? 'Done' : 'Not done'}`"
+      ></div>
+    </div>
   </div>
 </template>
 
@@ -55,21 +95,40 @@ function formatDate(date: string) {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 10px);
-  gap: 4px;
-  margin-top: 8px;
+  grid-template-columns: repeat(7, 14px);
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.stats {
+  font-size: 12px;
+  color: #ccc;
+  margin-bottom: 6px;
 }
 
 .cell {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
   cursor: pointer;
-  transition: all 0.15s ease;
+
+  transition: all 0.25s ease;
+
+  opacity: 0;
+  transform: scale(0.5);
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .cell:hover {
-  transform: scale(1.5);
+  transform: scale(1.6);
+  box-shadow: 0 0 8px rgba(57, 211, 83, 0.9);
 }
 
 .level-0 {
@@ -77,25 +136,20 @@ function formatDate(date: string) {
 }
 
 .level-1 {
-  background: #0e4429;
+  background: #b7f7c1;
 }
 
 .level-2 {
-  background: #006d32;
+  background: #7df49a;
 }
 
 .level-3 {
-  background: #26a641;
+  background: #39d353;
+  box-shadow: 0 0 5px rgba(57, 211, 83, 0.6);
 }
 
 .level-4 {
-  background: #39d353;
-}
-
-.level-1:hover,
-.level-2:hover,
-.level-3:hover,
-.level-4:hover {
-  box-shadow: 0 0 6px rgba(57, 211, 83, 0.8);
+  background: #00ff66;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.9);
 }
 </style>

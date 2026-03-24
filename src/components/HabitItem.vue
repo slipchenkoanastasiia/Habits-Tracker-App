@@ -16,7 +16,6 @@
       Send Report
     </button>
 
-    <!-- MODAL -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal">
         <h3>Email the report</h3>
@@ -131,4 +130,3 @@ async function sendReport() {
   }
 }
 </script>
-
