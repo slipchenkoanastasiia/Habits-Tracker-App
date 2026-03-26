@@ -8,7 +8,7 @@
     </button>
 
     <HabitGrid
-      :history="habit.history || {}"
+      :history="historySafe"
       @toggle="toggleDay"
     />
 
@@ -44,11 +44,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { Habit } from '@/types/Habit'
 import HabitGrid from './HabitGrid.vue'
+import { sendReport } from '@/api/email'
 
 const props = defineProps<{ habit: Habit }>()
+
+const historySafe = computed(() => props.habit.history || {})
 
 const emit = defineEmits<{
   (e: 'toggle-done', id: string): void
@@ -84,8 +87,17 @@ function closeModal() {
 }
 
 async function sendReport() {
+  if (loading.value) return
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
   if (!email.value) {
     message.value = 'Будь ласка, введіть email.'
+    return
+  }
+
+  if (!emailRegex.test(email.value)) {
+    message.value = 'Некоректний email.'
     return
   }
 
@@ -96,35 +108,22 @@ async function sendReport() {
 Стан на сьогодні: ${props.habit.doneToday ? 'Виконано' : 'Не виконано'}.`
 
   try {
-    console.log('📤 Sending request...')
+    const data = await sendReport(email.value, reportText)
 
-    const res = await fetch('http://localhost:5000/send-report', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email.value,
-        report: reportText,
-      }),
-    })
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`)
-    }
-
-    const data = await res.json()
-
-    console.log('📥 Response:', data)
-
-    if (data.message) {
+    if (data.success) {
       message.value = 'Звіт надіслано!'
+      email.value = ''
+
+      setTimeout(() => {
+        showModal.value = false
+      }, 1000)
     } else {
-      message.value = 'Помилка: ' + (data.error || 'Невідома помилка')
+      message.value = data.error || 'Помилка'
     }
+
   } catch (err: any) {
     console.error('❌ Error:', err)
-    message.value = 'Помилка запиту: ' + err.message
+    message.value = err.message || 'Невідома помилка'
   } finally {
     loading.value = false
   }
