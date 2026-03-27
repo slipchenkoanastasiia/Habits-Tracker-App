@@ -2,11 +2,11 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
-  history: Record<string, number>
+  history: Record<string, boolean>
 }>()
 
 const emit = defineEmits<{
-  (e: 'toggle', date: string, value: number): void
+  (e: 'toggle', date: string, value: boolean): void
 }>()
 
 function getLast7Days() {
@@ -24,12 +24,8 @@ function getLast7Days() {
 
 const days = computed(() => getLast7Days())
 
-function getLevel(value: number) {
-  if (value === 0) return 'level-0'
-  if (value === 1) return 'level-1'
-  if (value === 2) return 'level-2'
-  if (value === 3) return 'level-3'
-  return 'level-4'
+function getLevel(value: boolean) {
+  return value ? 'level-3' : 'level-0'
 }
 
 function formatDate(date: string) {
@@ -41,17 +37,16 @@ function formatDate(date: string) {
 }
 
 function handleClick(day: string) {
-  const current = props.history[day] ?? 0
-
-  const next = current === 0 ? 1 : 0
+  const current = props.history[day] ?? false
+  const next = !current
 
   emit('toggle', day, next)
 }
 
 const progress = computed(() => {
-  const values = days.value.map(d => props.history[d] ?? 0)
+  const values = days.value.map(d => props.history[d] ? 1 : 0)
 
-  const total = values.length * 4
+  const total = values.length
   const done = values.reduce((a, b) => a + b, 0)
 
   return Math.round((done / total) * 100)
@@ -62,14 +57,15 @@ const streak = computed(() => {
 
   for (let i = days.value.length - 1; i >= 0; i--) {
     const day = days.value[i]
-    const val = props.history[day] ?? 0
+    const val = props.history[day]
 
-    if (val > 0) count++
+    if (val) count++
     else break
   }
 
   return count
 })
+
 </script>
 
 <template>
@@ -83,9 +79,8 @@ const streak = computed(() => {
       <div
         v-for="day in days"
         :key="day"
-        :class="['cell', getLevel(history[day] ?? 0)]"
-        @click="handleClick(day)"
-        :title="`${formatDate(day)} — ${(history[day] ?? 0) > 0 ? 'Done' : 'Not done'}`"
+        :class="['cell', getLevel(history[day] ?? false)]"
+:title="`${formatDate(day)} — ${history[day] ? 'Done' : 'Not done'}`"
       ></div>
     </div>
   </div>

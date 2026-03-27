@@ -47,7 +47,7 @@
 import { ref, computed } from 'vue'
 import type { Habit } from '@/types/Habit'
 import HabitGrid from './HabitGrid.vue'
-import { sendReport } from '@/api/email'
+import { sendReport as sendReportApi } from '@/api/email'
 
 const props = defineProps<{ habit: Habit }>()
 
@@ -104,11 +104,13 @@ async function sendReport() {
   loading.value = true
   message.value = ''
 
-  const reportText = `Звіт по звичці "${props.habit.name}":
-Стан на сьогодні: ${props.habit.doneToday ? 'Виконано' : 'Не виконано'}.`
+const reportText = `Habit Report
+
+Habit: ${props.habit.name}
+Status for today: ${props.habit.doneToday ? 'Completed ✅' : 'Not completed ❌'}`
 
   try {
-    const data = await sendReport(email.value, reportText)
+const data = await sendReportApi(email.value, reportText)
 
     if (data.success) {
       message.value = 'Звіт надіслано!'
