@@ -5,7 +5,6 @@ import HabitList from './components/HabitList.vue'
 
 <template>
   <div id="app">
-    <h1>My Habits Tracker</h1>
     <HabitList />
   </div>
 </template>

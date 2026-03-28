@@ -1,12 +1,44 @@
+<template>
+  <div class="habit-card">
+    <div class="habit-header">
+      <div class="habit-title">
+        <i class="fas fa-bolt"></i>
+        <span>{{ habitName }}</span>
+      </div>
+      <button class="done-btn" @click="toggleToday">{{ habitDone ? '✓ Done' : 'Mark Done' }}</button>
+    </div>
+
+    <div class="habit-stats">
+      <p>Progress: {{ progress }}%</p>
+      <p>🔥 Streak: {{ streak }} days</p>
+    </div>
+
+    <div class="habit-week-grid">
+      <div
+        v-for="day in days"
+        :key="day"
+        :class="['day-cell', getLevel(history[day] ?? false)]"
+        @click="handleClick(day)"
+        :title="`${formatDate(day)} — ${history[day] ? 'Done' : 'Not done'}`"
+      >
+        {{ getDayLetter(day) }}
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { computed } from 'vue'
 
 const props = defineProps<{
-  history: Record<string, boolean>
+  history: Record<string, boolean>,
+  habitName: string,
+  habitDone: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'toggle', date: string, value: boolean): void
+  (e: 'toggleToday'): void
 }>()
 
 function getLast7Days() {
@@ -36,115 +68,107 @@ function formatDate(date: string) {
   return `${day}.${month}`
 }
 
+function getDayLetter(date: string) {
+  const d = new Date(date)
+  return d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)
+}
+
 function handleClick(day: string) {
   const current = props.history[day] ?? false
-  const next = !current
+  emit('toggle', day, !current)
+}
 
-  emit('toggle', day, next)
+function toggleToday() {
+  emit('toggleToday')
 }
 
 const progress = computed(() => {
   const values = days.value.map(d => props.history[d] ? 1 : 0)
-
   const total = values.length
   const done = values.reduce((a, b) => a + b, 0)
-
   return Math.round((done / total) * 100)
 })
 
 const streak = computed(() => {
   let count = 0
-
   for (let i = days.value.length - 1; i >= 0; i--) {
-    const day = days.value[i]
-    const val = props.history[day]
-
-    if (val) count++
+    if (props.history[days.value[i]]) count++
     else break
   }
-
   return count
 })
-
 </script>
 
-<template>
-  <div>
-    <div class="stats">
-      <p>Progress: {{ progress }}%</p>
-      <p>🔥 Streak: {{ streak }} days</p>
-    </div>
-
-    <div class="grid">
-      <div
-        v-for="day in days"
-        :key="day"
-        :class="['cell', getLevel(history[day] ?? false)]"
-:title="`${formatDate(day)} — ${history[day] ? 'Done' : 'Not done'}`"
-      ></div>
-    </div>
-  </div>
-</template>
-
 <style scoped>
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(7, 14px);
-  gap: 6px;
-  margin-top: 10px;
+.habit-card {
+  background: #111;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 10px 0;
+  box-shadow: 0 0 12px rgba(0,0,0,0.6);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.stats {
+.habit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.habit-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.habit-title i {
+  font-size: 18px;
+}
+
+.done-btn {
+  background: #22c55e;
+  border: none;
+  color: black;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.habit-stats {
+  display: flex;
+  justify-content: space-between;
   font-size: 12px;
   color: #ccc;
-  margin-bottom: 6px;
 }
 
-.cell {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
+.habit-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-cell {
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
-
-  transition: all 0.25s ease;
-
-  opacity: 0;
-  transform: scale(0.5);
-  animation: fadeIn 0.3s ease forwards;
+  transition: all 0.2s;
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
+.day-cell.level-0 { background: #222; }
+.day-cell.level-3 { background: #39d353; box-shadow: 0 0 5px rgba(57, 211, 83, 0.6); }
 
-.cell:hover {
-  transform: scale(1.6);
+.day-cell:hover {
+  transform: scale(1.1);
   box-shadow: 0 0 8px rgba(57, 211, 83, 0.9);
-}
-
-.level-0 {
-  background: #2b2b2b;
-}
-
-.level-1 {
-  background: #b7f7c1;
-}
-
-.level-2 {
-  background: #7df49a;
-}
-
-.level-3 {
-  background: #39d353;
-  box-shadow: 0 0 5px rgba(57, 211, 83, 0.6);
-}
-
-.level-4 {
-  background: #00ff66;
-  box-shadow: 0 0 10px rgba(0, 255, 102, 0.9);
 }
 </style>
