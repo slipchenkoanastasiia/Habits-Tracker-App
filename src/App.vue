@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import HabitList from './components/HabitList.vue'
+import HomeView from './views/HomeView.vue'
 
 </script>
 
 <template>
   <div id="app">
-    <HabitList />
+    <HomeView />
   </div>
 </template>
 

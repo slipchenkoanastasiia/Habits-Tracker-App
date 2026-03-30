@@ -1,10 +1,10 @@
 <template>
   <div class="habit-card">
     <div class="habit-header">
-      <div class="habit-title">
-        <i class="fas fa-bolt"></i>
-        <span>{{ habitName }}</span>
-      </div>
+<div class="habit-title">
+  <i class="lightning">⚡</i>
+  <span>{{ habitName }}</span>
+</div>
       <button class="done-btn" @click="toggleToday">{{ habitDone ? '✓ Done' : 'Mark Done' }}</button>
     </div>
 
@@ -101,15 +101,16 @@ const streak = computed(() => {
 
 <style scoped>
 .habit-card {
-  background: #111;
-  border-radius: 12px;
+  background: rgba(30, 41, 59, 0.6); 
+  border-radius: 14px;
   padding: 16px;
   margin: 10px 0;
-  box-shadow: 0 0 12px rgba(0,0,0,0.6);
-  color: #fff;
+  color: #94a3b8; 
   display: flex;
   flex-direction: column;
   gap: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .habit-header {
@@ -122,28 +123,44 @@ const streak = computed(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 16px;
+  color: #fff;
 }
 
 .habit-title i {
   font-size: 18px;
+  color: #22c55e;
+}
+
+.lightning {
+  font-size: 18px;
+  color: #facc15; 
+  margin-right: 6px;
 }
 
 .done-btn {
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #4ade80);
   border: none;
   color: black;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
   cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+  transition: all 0.2s ease;
+}
+
+.done-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
 }
 
 .habit-stats {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #ccc;
+  color: #94a3b8;
 }
 
 .habit-week-grid {
@@ -157,18 +174,23 @@ const streak = computed(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 6px;
+  border-radius: 10px;
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
+  background: #1e293b;
+  color: #94a3b8;
 }
 
-.day-cell.level-0 { background: #222; }
-.day-cell.level-3 { background: #39d353; box-shadow: 0 0 5px rgba(57, 211, 83, 0.6); }
+.day-cell.level-3 {
+  background: #22c55e;
+  color: black;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
 
 .day-cell:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 8px rgba(57, 211, 83, 0.9);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
 }
 </style>
