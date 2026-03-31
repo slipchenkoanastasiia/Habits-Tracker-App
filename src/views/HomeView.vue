@@ -24,7 +24,9 @@
     </div>
 
     <div class="actions">
-      <button class="secondary">Monthly Overview</button>
+      <button class="secondary" @click="goToMonthly">
+  Monthly Overview
+</button>
       <button class="primary">Send Weekly Report</button>
     </div>
   </div>
@@ -32,6 +34,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Habit } from '@/types/Habit'
 import { defaultHabits } from '@/data/defaultHabits'
 import HabitItem from '@/components/HabitItem.vue'
@@ -42,6 +45,13 @@ const habits = ref<Habit[]>([])
 const activeTab = ref<'all' | 'physical' | 'mental'>('all')
 
 const currentDate = ref(new Date())
+
+
+const router = useRouter()
+
+function goToMonthly() {
+  router.push('/monthly')
+}
 
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY)
@@ -238,7 +248,5 @@ function nextWeek() {
   box-shadow:
     0 0 4px rgba(59, 130, 246, 0.5);
 }
-
-
 
 </style>
