@@ -14,6 +14,15 @@
       <button @click="nextWeek">&gt;</button>
     </div>
 
+    <div class="add-habit">
+      <input v-model="newHabitName" placeholder="New habit" />
+      <select v-model="newHabitType">
+  <option :value="'physical'">Physical</option>
+  <option :value="'mental'">Mental</option>
+</select>
+      <button @click="addHabit">Add</button>
+    </div>
+
     <div class="habit-list">
       <HabitItem
         v-for="habit in filteredHabits"
@@ -63,17 +72,59 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Habit } from '@/types/Habit'
+import type { Habit, HabitType } from '@/types/Habit'
 import { defaultHabits } from '@/data/defaultHabits'
 import HabitItem from '@/components/HabitItem.vue'
+import { v4 as uuidv4 } from 'uuid'
 
 const STORAGE_KEY = 'habits-tracker-data'
 
+const newHabitName = ref<string>('')
+const newHabitType = ref<HabitType>('physical')
+
 const habits = ref<Habit[]>([])
-const activeTab = ref<'all' | 'physical' | 'mental'>('all')
+const activeTab = ref<'all' | HabitType>('all')
 const currentDate = ref(new Date())
 
+const showModal = ref(false)
+const email = ref('')
+const message = ref('')
+const loading = ref(false)
+
 const router = useRouter()
+
+function openModal() {
+  showModal.value = true
+  email.value = ''
+  message.value = ''
+}
+
+function closeModal() {
+  showModal.value = false
+}
+
+function addHabit() {
+  const name = newHabitName.value.trim()
+  if (!name) return
+
+  const newHabit: Habit = {
+    id: uuidv4(),
+    name,
+    type: newHabitType.value,
+    icon: 'star',      
+    doneToday: false,
+    history: {}
+  }
+
+  habits.value.push(newHabit)
+
+  newHabitName.value = ''
+  newHabitType.value = 'physical'
+}
+
+function deleteHabit(id: string) {
+  habits.value = habits.value.filter(h => h.id !== id)
+}
 
 function goToMonthly() {
   router.push('/monthly')
@@ -87,7 +138,6 @@ function getLocalDate(date: Date) {
 
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY)
-
   if (saved) {
     try {
       habits.value = JSON.parse(saved)
@@ -99,9 +149,7 @@ onMounted(() => {
   }
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal()
-    }
+    if (e.key === 'Escape') closeModal()
   })
 })
 
@@ -109,15 +157,18 @@ watch(habits, (newVal) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal))
 }, { deep: true })
 
+watch(email, (v) => {
+  localStorage.setItem('habits-tracker-email', v)
+})
+
 function toggleDone(id: string) {
   const habit = habits.value.find(h => h.id === id)
   if (!habit) return
 
   const today = getLocalDate(new Date())
-
-  if (!habit.history) habit.history = {}
-
+  habit.history = habit.history || {}
   habit.history[today] = !habit.history[today]
+  habit.doneToday = habit.history[today]
 }
 
 const filteredHabits = computed(() => {
@@ -136,10 +187,7 @@ const weekRange = computed(() => {
   const sunday = new Date(monday)
   sunday.setDate(monday.getDate() + 6)
 
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric'
-  }
+  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
 
   return `${monday.toLocaleDateString('en-US', options)} - ${sunday.toLocaleDateString('en-US', options)}`
 })
@@ -150,21 +198,6 @@ function prevWeek() {
 
 function nextWeek() {
   currentDate.value = new Date(currentDate.value.getTime() + 7 * 86400000)
-}
-
-const showModal = ref(false)
-const email = ref('')
-const message = ref('')
-const loading = ref(false)
-
-function openModal() {
-  showModal.value = true
-  email.value = ''
-  message.value = ''
-}
-
-function closeModal() {
-  showModal.value = false
 }
 
 async function sendReport() {
@@ -180,25 +213,14 @@ async function sendReport() {
     const res = await fetch('http://localhost:5001/send-report', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: email.value,
-        report: 'Weekly habits report',
-      }),
+      body: JSON.stringify({ email: email.value, report: 'Weekly habits report' })
     })
 
     const data = await res.json()
+    message.value = res.ok ? 'Sent successfully ✅' : data.error || 'Error'
 
-    if (res.ok) {
-      message.value = 'Sent successfully ✅'
-
-      setTimeout(() => {
-        closeModal()
-      }, 1000)
-    } else {
-      message.value = data.error || 'Error'
-    }
-
-  } catch (e) {
+    if (res.ok) setTimeout(closeModal, 1000)
+  } catch {
     message.value = 'Connection error'
   } finally {
     loading.value = false
@@ -413,4 +435,46 @@ async function sendReport() {
   text-align: center;
   font-size: 13px;
 }
+
+.add-habit { 
+  display: flex; 
+  gap: 6px; 
+  margin-bottom: 14px; 
+} 
+
+.add-habit input, .add-habit select { 
+  padding: 6px 8px; 
+  border-radius: 8px; 
+  border: none; 
+  background: #0f172a; 
+  color: white; 
+  } 
+  
+  .add-habit select { 
+    background: #1e293b 
+    } 
+    
+    .add-habit button { 
+      background: #22c55e; 
+      border-radius: 8px; 
+      padding: 6px 12px; 
+      border: none; 
+      cursor: pointer; }
+
+      .delete-btn { 
+        position: absolute; 
+        top: 6px; 
+        right: 6px; 
+        background: transparent; 
+        border: none; 
+        font-size: 14px; 
+        cursor: pointer; 
+        color: #f87171; 
+        transition: transform 0.15s ease; 
+        } 
+        
+        .delete-btn:hover { 
+          transform: scale(1.2); 
+          }
 </style>
+

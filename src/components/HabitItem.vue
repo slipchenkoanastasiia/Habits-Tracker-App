@@ -2,10 +2,12 @@
   <div class="habit-item">
     <HabitGrid
       :history="historySafe"
-      :habitName="habit.name"
-      :habitDone="habit.doneToday"
+      :habit-id="habit.id"
+      :habit-name="habit.name"
+      :habit-done="habit.doneToday"
       @toggle="toggleDay"
-      @toggleToday="toggleDone"
+      @toggle-today="toggleDone"
+      @delete-habit="deleteHabit"
     />
   </div>
 </template>
@@ -21,6 +23,8 @@ const historySafe = computed(() => props.habit.history || {})
 
 const emit = defineEmits<{
   (e: 'toggle-done', id: string): void
+  (e: 'toggle-day', date: string): void
+  (e: 'delete-habit', id: string): void
 }>()
 
 function toggleDone() {
@@ -28,8 +32,11 @@ function toggleDone() {
 }
 
 function toggleDay(date: string) {
-  if (!props.habit.history) props.habit.history = {}
-  props.habit.history[date] = !props.habit.history[date]
+  emit('toggle-day', date)
+}
+
+function deleteHabit() {
+  emit('delete-habit', props.habit.id)
 }
 </script>
 

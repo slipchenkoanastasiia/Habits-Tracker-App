@@ -1,11 +1,17 @@
 <template>
   <div class="habit-card">
     <div class="habit-header">
-<div class="habit-title">
-  <i class="lightning">⚡</i>
-  <span>{{ habitName }}</span>
-</div>
-      <button class="done-btn" @click="toggleToday">{{ habitDone ? '✓ Done' : 'Mark Done' }}</button>
+      <div class="habit-title">
+        <i class="lightning">⚡</i>
+        <span>{{ habitName }}</span>
+      </div>
+
+      <div class="habit-actions">
+        <button class="done-btn" @click="toggleToday">
+          {{ habitDone ? '✓ Done' : 'Mark Done' }}
+        </button>
+        <button class="delete-btn" @click="$emit('delete-habit', habitId)">🗑️</button>
+      </div>
     </div>
 
     <div class="habit-stats">
@@ -31,6 +37,7 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
+  habitId: string,
   history: Record<string, boolean>,
   habitName: string,
   habitDone: boolean
@@ -38,19 +45,18 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'toggle', date: string, value: boolean): void
-  (e: 'toggleToday'): void
+  (e: 'toggleToday', id: string): void
+  (e: 'delete-habit', id: string): void
 }>()
 
 function getLast7Days() {
   const days: string[] = []
   const today = new Date()
-
   for (let i = 6; i >= 0; i--) {
     const d = new Date()
     d.setDate(today.getDate() - i)
     days.push(d.toLocaleDateString('en-CA'))
   }
-
   return days
 }
 
@@ -64,7 +70,6 @@ function formatDate(date: string) {
   const d = new Date(date)
   const day = String(d.getDate()).padStart(2, '0')
   const month = String(d.getMonth() + 1).padStart(2, '0')
-
   return `${day}.${month}`
 }
 
@@ -79,7 +84,7 @@ function handleClick(day: string) {
 }
 
 function toggleToday() {
-  emit('toggleToday')
+  emit('toggleToday', props.habitId)
 }
 
 const progress = computed(() => {
@@ -128,15 +133,16 @@ const streak = computed(() => {
   color: #fff;
 }
 
-.habit-title i {
-  font-size: 18px;
-  color: #22c55e;
-}
-
 .lightning {
   font-size: 18px;
   color: #facc15; 
   margin-right: 6px;
+}
+
+.habit-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .done-btn {
@@ -154,6 +160,19 @@ const streak = computed(() => {
 .done-btn:active {
   transform: scale(0.96);
   box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #f87171;
+  transition: transform 0.15s ease;
+}
+
+.delete-btn:hover {
+  transform: scale(1.2);
 }
 
 .habit-stats {
