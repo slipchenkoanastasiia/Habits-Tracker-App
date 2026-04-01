@@ -25,9 +25,37 @@
 
     <div class="actions">
       <button class="secondary" @click="goToMonthly">
-  Monthly Overview
-</button>
-      <button class="primary">Send Weekly Report</button>
+        Monthly Overview
+      </button>
+
+      <button class="primary" @click="openModal">
+        Send Weekly Report
+      </button>
+    </div>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+    <div class="modal">
+      <h3 class="modal-title">Send Weekly Report</h3>
+
+      <input
+        v-model="email"
+        type="email"
+        placeholder="Enter your email"
+        class="modal-input"
+      />
+
+      <div class="modal-buttons">
+        <button class="send-btn" @click="sendReport" :disabled="loading">
+          {{ loading ? 'Sending...' : 'Send' }}
+        </button>
+
+        <button class="cancel-btn" @click="closeModal">
+          Cancel
+        </button>
+      </div>
+
+      <p v-if="message" class="modal-message">{{ message }}</p>
     </div>
   </div>
 </template>
@@ -43,9 +71,7 @@ const STORAGE_KEY = 'habits-tracker-data'
 
 const habits = ref<Habit[]>([])
 const activeTab = ref<'all' | 'physical' | 'mental'>('all')
-
 const currentDate = ref(new Date())
-
 
 const router = useRouter()
 
@@ -53,8 +79,15 @@ function goToMonthly() {
   router.push('/monthly')
 }
 
+function getLocalDate(date: Date) {
+  return date.getFullYear() + '-' +
+    String(date.getMonth() + 1).padStart(2, '0') + '-' +
+    String(date.getDate()).padStart(2, '0')
+}
+
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY)
+
   if (saved) {
     try {
       habits.value = JSON.parse(saved)
@@ -64,6 +97,12 @@ onMounted(() => {
   } else {
     habits.value = defaultHabits.map(h => ({ ...h }))
   }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal()
+    }
+  })
 })
 
 watch(habits, (newVal) => {
@@ -72,7 +111,13 @@ watch(habits, (newVal) => {
 
 function toggleDone(id: string) {
   const habit = habits.value.find(h => h.id === id)
-  if (habit) habit.doneToday = !habit.doneToday
+  if (!habit) return
+
+  const today = getLocalDate(new Date())
+
+  if (!habit.history) habit.history = {}
+
+  habit.history[today] = !habit.history[today]
 }
 
 const filteredHabits = computed(() => {
@@ -82,28 +127,86 @@ const filteredHabits = computed(() => {
 
 const weekRange = computed(() => {
   const date = new Date(currentDate.value)
-  const day = date.getDay() 
+  const day = date.getDay()
   const diffToMonday = day === 0 ? -6 : 1 - day
+
   const monday = new Date(date)
   monday.setDate(date.getDate() + diffToMonday)
+
   const sunday = new Date(monday)
   sunday.setDate(monday.getDate() + 6)
 
-  const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+  const options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric'
+  }
+
   return `${monday.toLocaleDateString('en-US', options)} - ${sunday.toLocaleDateString('en-US', options)}`
 })
 
 function prevWeek() {
-  currentDate.value = new Date(currentDate.value.getTime() - 7 * 24 * 60 * 60 * 1000)
+  currentDate.value = new Date(currentDate.value.getTime() - 7 * 86400000)
 }
 
 function nextWeek() {
-  currentDate.value = new Date(currentDate.value.getTime() + 7 * 24 * 60 * 60 * 1000)
+  currentDate.value = new Date(currentDate.value.getTime() + 7 * 86400000)
+}
+
+const showModal = ref(false)
+const email = ref('')
+const message = ref('')
+const loading = ref(false)
+
+function openModal() {
+  showModal.value = true
+  email.value = ''
+  message.value = ''
+}
+
+function closeModal() {
+  showModal.value = false
+}
+
+async function sendReport() {
+  if (!email.value.trim()) {
+    message.value = 'Enter email'
+    return
+  }
+
+  loading.value = true
+  message.value = ''
+
+  try {
+    const res = await fetch('http://localhost:5001/send-report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.value,
+        report: 'Weekly habits report',
+      }),
+    })
+
+    const data = await res.json()
+
+    if (res.ok) {
+      message.value = 'Sent successfully ✅'
+
+      setTimeout(() => {
+        closeModal()
+      }, 1000)
+    } else {
+      message.value = data.error || 'Error'
+    }
+
+  } catch (e) {
+    message.value = 'Connection error'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <style scoped>
-
 .container {
   max-width: 420px;
   margin: 0 auto;
@@ -233,7 +336,7 @@ function nextWeek() {
 }
 
 .secondary:hover {
-  border: 1px solid rgba(59, 130, 246, 0.7);
+  border: 1px solid #3b82f6b3;
 
   box-shadow:
     0 0 6px rgba(59, 130, 246, 0.6),
@@ -249,4 +352,65 @@ function nextWeek() {
     0 0 4px rgba(59, 130, 246, 0.5);
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+
+.modal {
+  width: 90%;
+  max-width: 320px;
+  background: rgba(30, 41, 59, 0.9);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.modal-title {
+  text-align: center;
+  margin-bottom: 14px;
+  color: #e2e8f0;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #0f172a;
+  color: white;
+  margin-bottom: 14px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.send-btn {
+  flex: 1;
+  background: #22c55e;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+}
+
+.cancel-btn {
+  flex: 1;
+  background: #1e293b;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  color: #94a3b8;
+}
+
+.modal-message {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 13px;
+}
 </style>

@@ -53,97 +53,83 @@ onMounted(() => {
   if (saved) {
     habits.value = JSON.parse(saved)
   }
+
+  animateCircle(animatedPhysicalPercent, physicalPercent.value)
+  animateCircle(animatedMentalPercent, mentalPercent.value)
 })
+
+function getLocalDate(date: Date) {
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 const daysInMonth = computed(() => {
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
-
   const days = new Date(year, month + 1, 0).getDate()
 
-  return Array.from({ length: days }, (_, i) => i + 1)
+  const firstDay = new Date(year, month, 1).getDay() 
+  const offset = firstDay === 0 ? 6 : firstDay - 1 
+
+  const arr: (number | null)[] = Array(offset).fill(null) 
+  for (let i = 1; i <= days; i++) arr.push(i)
+
+  return arr
 })
 
-function getLevel(day: number) {
-  const dateStr = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    day
-  ).toLocaleDateString('en-CA')
+function getLevel(day: number | null) {
+  if (day === null) return 'level-0'
+
+  const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
+  const dateStr = getLocalDate(date)
 
   let count = 0
-
   habits.value.forEach(habit => {
-    if (habit.history?.[dateStr]) {
-      count++
-    }
+    if (habit.history?.[dateStr]) count++
   })
 
   if (count === 0) return 'level-0'
-  if (count === 1) return 'level-1'
-  if (count === 2) return 'level-2'
-  if (count === 3) return 'level-3'
-  return 'level-4'
+
+  const maxHabits = habits.value.length || 1
+  const ratio = count / maxHabits
+
+if (count === 0) return 'level-0'
+if (count === 1) return 'level-1'
+if (count === 2) return 'level-2'
+if (count === 3) return 'level-3'
+return 'level-4'
 }
 
 const physicalPercent = computed(() => {
   const physical = habits.value.filter(h => h.type === 'physical')
-
-  let total = 0
-  let done = 0
-
+  let total = 0, done = 0
   physical.forEach(habit => {
-    Object.values(habit.history || {}).forEach(val => {
-      total++
-      if (val) done++
-    })
+    Object.values(habit.history || {}).forEach(val => { total++; if(val) done++ })
   })
-
   return total ? Math.round((done / total) * 100) : 0
 })
 
 const mentalPercent = computed(() => {
   const mental = habits.value.filter(h => h.type === 'mental')
-
-  let total = 0
-  let done = 0
-
+  let total = 0, done = 0
   mental.forEach(habit => {
-    Object.values(habit.history || {}).forEach(val => {
-      total++
-      if (val) done++
-    })
+    Object.values(habit.history || {}).forEach(val => { total++; if(val) done++ })
   })
-
   return total ? Math.round((done / total) * 100) : 0
-})
-
-const activeDays = computed(() => {
-  const daysSet = new Set()
-
-  habits.value.forEach(habit => {
-    Object.entries(habit.history || {}).forEach(([date, val]) => {
-      if (val) daysSet.add(date)
-    })
-  })
-
-  return daysSet.size
 })
 
 const streak = computed(() => {
   let count = 0
-  const today = new Date()
+  const today = getLocalDate(new Date())
 
   for (let i = 0; i < 365; i++) {
     const d = new Date()
-    d.setDate(today.getDate() - i)
+    d.setDate(d.getDate() - i)
+    const key = getLocalDate(d)
 
-    const key = d.toLocaleDateString('en-CA')
-
-    const hasActivity = habits.value.some(
-      h => h.history?.[key]
-    )
-
+    const hasActivity = habits.value.some(h => h.history?.[key])
     if (hasActivity) count++
     else break
   }
@@ -154,15 +140,9 @@ const streak = computed(() => {
 const animatedPhysicalPercent = ref(0)
 const animatedMentalPercent = ref(0)
 
-onMounted(() => {
-  animateCircle(animatedPhysicalPercent, physicalPercent.value)
-  animateCircle(animatedMentalPercent, mentalPercent.value)
-})
-
 function animateCircle(refValue: any, target: number) {
   let start = 0
-  const duration = 1000 
-  const step = (timestamp?: number) => {
+  const step = () => {
     start += 1
     if (start <= target) {
       refValue.value = start
@@ -173,7 +153,6 @@ function animateCircle(refValue: any, target: number) {
   }
   requestAnimationFrame(step)
 }
-
 </script>
 
 <style scoped>
@@ -252,7 +231,7 @@ function animateCircle(refValue: any, target: number) {
 }
 
 .stats {
-  margin-top: 20px;
+  margin-top: 60px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -261,12 +240,12 @@ function animateCircle(refValue: any, target: number) {
 
 .progress-row {
   display: flex;
-  gap: 40px;
+  gap: 60px;
   justify-content: center;
 }
 
 .progress-circle {
-  --size: 80px;
+  --size: 100px;
   --percent: 0;
   --color: #22c55e;
 
@@ -302,6 +281,7 @@ function animateCircle(refValue: any, target: number) {
   font-size: 14px;
   color: #cbd5f5;
   text-align: center;
+  margin-top: 10px;
 }
 
 </style>
