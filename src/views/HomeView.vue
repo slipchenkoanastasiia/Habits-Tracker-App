@@ -17,29 +17,31 @@
     <div class="add-habit">
       <input v-model="newHabitName" placeholder="New habit" />
       <select v-model="newHabitType">
-  <option :value="'physical'">Physical</option>
-  <option :value="'mental'">Mental</option>
-</select>
+        <option value="physical">Physical</option>
+        <option value="mental">Mental</option>
+      </select>
       <button @click="addHabit">Add</button>
     </div>
 
-    <div class="habit-list">
-      <HabitItem
-        v-for="habit in filteredHabits"
-        :key="habit.id"
-        :habit="habit"
-        @toggle-done="toggleDone"
-      />
-    </div>
+    <draggable
+      v-model="habits"
+      item-key="id"
+      class="habit-list"
+      ghost-class="ghost"
+      animation="200"
+    >
+      <template #item="{ element }">
+        <HabitItem
+          :habit="element"
+          @toggle-done="toggleDone"
+          @delete-habit="deleteHabit"
+        />
+      </template>
+    </draggable>
 
     <div class="actions">
-      <button class="secondary" @click="goToMonthly">
-        Monthly Overview
-      </button>
-
-      <button class="primary" @click="openModal">
-        Send Weekly Report
-      </button>
+      <button class="secondary" @click="goToMonthly">Monthly Overview</button>
+      <button class="primary" @click="openModal">Send Weekly Report</button>
     </div>
   </div>
 
@@ -58,13 +60,21 @@
         <button class="send-btn" @click="sendReport" :disabled="loading">
           {{ loading ? 'Sending...' : 'Send' }}
         </button>
-
-        <button class="cancel-btn" @click="closeModal">
-          Cancel
-        </button>
+        <button class="cancel-btn" @click="closeModal">Cancel</button>
       </div>
 
       <p v-if="message" class="modal-message">{{ message }}</p>
+    </div>
+  </div>
+
+  <div v-if="showDeleteModal" class="modal-overlay" @click.self="cancelDelete">
+    <div class="modal">
+      <h3 class="modal-title">Delete Habit</h3>
+      <p class="modal-message">Are you sure you want to delete this habit?</p>
+      <div class="modal-buttons">
+        <button class="cancel-btn" @click="cancelDelete">Cancel</button>
+        <button class="delete-confirm-btn" @click="confirmDelete">Delete</button>
+      </div>
     </div>
   </div>
 </template>
@@ -76,12 +86,13 @@ import type { Habit, HabitType } from '@/types/Habit'
 import { defaultHabits } from '@/data/defaultHabits'
 import HabitItem from '@/components/HabitItem.vue'
 import { v4 as uuidv4 } from 'uuid'
+import draggable from 'vuedraggable'
+import { generateWeeklyReportHTML } from '@/utils/generateReportHTML'
 
 const STORAGE_KEY = 'habits-tracker-data'
 
 const newHabitName = ref<string>('')
 const newHabitType = ref<HabitType>('physical')
-
 const habits = ref<Habit[]>([])
 const activeTab = ref<'all' | HabitType>('all')
 const currentDate = ref(new Date())
@@ -92,6 +103,26 @@ const message = ref('')
 const loading = ref(false)
 
 const router = useRouter()
+
+const showDeleteModal = ref(false)
+const habitToDelete = ref<string | null>(null)
+
+function deleteHabit(id: string) {
+  habitToDelete.value = id
+  showDeleteModal.value = true
+}
+
+function confirmDelete() {
+  if (!habitToDelete.value) return
+  habits.value = habits.value.filter(h => h.id !== habitToDelete.value)
+  showDeleteModal.value = false
+  habitToDelete.value = null
+}
+
+function cancelDelete() {
+  showDeleteModal.value = false
+  habitToDelete.value = null
+}
 
 function openModal() {
   showModal.value = true
@@ -106,24 +137,17 @@ function closeModal() {
 function addHabit() {
   const name = newHabitName.value.trim()
   if (!name) return
-
   const newHabit: Habit = {
     id: uuidv4(),
     name,
     type: newHabitType.value,
-    icon: 'star',      
+    icon: 'star',
     doneToday: false,
     history: {}
   }
-
   habits.value.push(newHabit)
-
   newHabitName.value = ''
   newHabitType.value = 'physical'
-}
-
-function deleteHabit(id: string) {
-  habits.value = habits.value.filter(h => h.id !== id)
 }
 
 function goToMonthly() {
@@ -131,9 +155,7 @@ function goToMonthly() {
 }
 
 function getLocalDate(date: Date) {
-  return date.getFullYear() + '-' +
-    String(date.getMonth() + 1).padStart(2, '0') + '-' +
-    String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
 onMounted(() => {
@@ -164,7 +186,6 @@ watch(email, (v) => {
 function toggleDone(id: string) {
   const habit = habits.value.find(h => h.id === id)
   if (!habit) return
-
   const today = getLocalDate(new Date())
   habit.history = habit.history || {}
   habit.history[today] = !habit.history[today]
@@ -180,15 +201,11 @@ const weekRange = computed(() => {
   const date = new Date(currentDate.value)
   const day = date.getDay()
   const diffToMonday = day === 0 ? -6 : 1 - day
-
   const monday = new Date(date)
   monday.setDate(date.getDate() + diffToMonday)
-
   const sunday = new Date(monday)
   sunday.setDate(monday.getDate() + 6)
-
   const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
-
   return `${monday.toLocaleDateString('en-US', options)} - ${sunday.toLocaleDateString('en-US', options)}`
 })
 
@@ -210,17 +227,25 @@ async function sendReport() {
   message.value = ''
 
   try {
+    const html = generateWeeklyReportHTML(email.value, habits.value)
+
+    if (!html || typeof html !== 'string') {
+      message.value = 'Report HTML is empty'
+      loading.value = false
+      return
+    }
+
     const res = await fetch('http://localhost:5001/send-report', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, report: 'Weekly habits report' })
+      body: JSON.stringify({ email: email.value, reportHTML: html })
     })
 
     const data = await res.json()
     message.value = res.ok ? 'Sent successfully ✅' : data.error || 'Error'
-
     if (res.ok) setTimeout(closeModal, 1000)
-  } catch {
+  } catch (err) {
+    console.error('Send report error:', err)
     message.value = 'Connection error'
   } finally {
     loading.value = false
@@ -476,5 +501,29 @@ async function sendReport() {
         .delete-btn:hover { 
           transform: scale(1.2); 
           }
+
+  .delete-confirm-btn {
+  flex: 1;
+  background: #ef4444;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+
+.habit-list > * {
+  cursor: grab;
+}
+
+.habit-list > *:active {
+  cursor: grabbing;
+}
 </style>
 

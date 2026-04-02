@@ -8,11 +8,10 @@ const isValidEmail = (email) => {
 }
 
 router.post('/send-report', async (req, res) => {
-  const { email, report } = req.body
-
+  const { email, reportHTML } = req.body   
   console.log('📩 BODY:', req.body)
 
-  if (!email || !report) {
+  if (!email || !reportHTML) {          
     return res.status(400).json({
       success: false,
       error: 'Email and report required'
@@ -27,7 +26,7 @@ router.post('/send-report', async (req, res) => {
   }
 
   try {
-    await sendEmail(email, report)
+    await sendEmail(email, reportHTML)     
 
     res.json({
       success: true,

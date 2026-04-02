@@ -1,4 +1,4 @@
-export const sendReport = async (email: string, report: string) => {
+export const sendReport = async (email: string, reportHTML: string) => {
   const res = await fetch('http://localhost:5001/send-report', {
     method: 'POST',
     headers: {
@@ -6,7 +6,7 @@ export const sendReport = async (email: string, report: string) => {
     },
     body: JSON.stringify({
       email,
-      report,
+      reportHTML,   
     }),
   })
 

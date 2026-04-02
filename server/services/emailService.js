@@ -1,10 +1,11 @@
 import { transporter } from '../config/mailer.js'
 
-export const sendEmail = async (email, report) => {
+export const sendEmail = async (email, reportHTML) => {
   return transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
     subject: 'Your Habit Report',
-    text: report
+    text: 'Your email client does not support HTML.', 
+    html: reportHTML                                 
   })
 }
