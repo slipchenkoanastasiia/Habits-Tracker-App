@@ -3,14 +3,17 @@ import { sendEmail } from '../services/emailService.js'
 
 const router = express.Router()
 
+// Функція перевірки валідності email
 const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+// Роут для відправки звіту
 router.post('/send-report', async (req, res) => {
   const { email, reportHTML } = req.body   
   console.log('📩 BODY:', req.body)
 
+  // Перевірка наявності обов'язкових даних
   if (!email || !reportHTML) {          
     return res.status(400).json({
       success: false,
@@ -26,6 +29,7 @@ router.post('/send-report', async (req, res) => {
   }
 
   try {
+  
     await sendEmail(email, reportHTML)     
 
     res.json({
@@ -33,11 +37,13 @@ router.post('/send-report', async (req, res) => {
       message: 'Email sent successfully ✅'
     })
   } catch (error) {
+
     console.error('❌ Email error:', error)
 
     res.status(500).json({
       success: false,
-      error: 'Failed to send email'
+      error: 'Failed to send email',
+      details: error.message 
     })
   }
 })
