@@ -267,20 +267,17 @@ async function sendReport() {
   font-size: 26px;
   font-weight: 700;
   margin-bottom: 20px;
-
-  color: #94a3b8;
-
-  text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+  color: var(--text-secondary);
+  text-shadow: 0 0 8px var(--glow-blue);
 }
 
 .tabs {
   display: flex;
-  background: rgba(30, 41, 59, 0.6);
-  border-radius: 14px;
   padding: 4px;
   margin-bottom: 16px;
-
-  backdrop-filter: blur(10px);
+  background: var(--bg-card);
+  backdrop-filter: var(--blur);
+  border-radius: var(--radius);
 }
 
 .tabs button {
@@ -289,40 +286,35 @@ async function sendReport() {
   border-radius: 10px;
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.25s ease;
 }
 
 .tabs button.active {
-  background: #22c55e;
+ background: var(--green);
   color: black;
+  box-shadow: 0 0 12px var(--glow-green);
   font-weight: 600;
-
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
 }
 
 .week-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  background: rgba(30, 41, 59, 0.6);
   padding: 10px 14px;
-  border-radius: 14px;
-
   margin-bottom: 18px;
-
-  backdrop-filter: blur(10px);
+  background: var(--bg-card);
+  backdrop-filter: var(--blur);
+  border-radius: var(--radius);
 }
 
 .week-nav button {
   background: transparent;
   border: none;
-  color: #22c55e;
+  color: var(--green);
   font-size: 18px;
   cursor: pointer;
-
   transition: transform 0.2s ease;
 }
 
@@ -344,24 +336,25 @@ async function sendReport() {
 .actions {
   position: sticky;
   bottom: 0;
-
   display: flex;
   flex-direction: column;
   gap: 10px;
-
   padding-top: 12px;
 
 }
 
 .primary {
-  background: linear-gradient(135deg, #22c55e, #4ade80);
+  background: linear-gradient(
+    135deg,
+    var(--green),
+    var(--green-light)
+  );
   color: black;
   padding: 14px;
   border-radius: 14px;
   font-weight: 600;
   cursor: pointer;
-
-  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
+  box-shadow: 0 6px 20px var(--glow-green);
   transition: all 0.2s ease;
 }
 
@@ -371,14 +364,12 @@ async function sendReport() {
 }
 
 .secondary {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--bg-card);
+  backdrop-filter: var(--blur);
   color: white;
   padding: 14px;
   border-radius: 14px;
   cursor: pointer;
-
-  backdrop-filter: blur(10px);
-
   transition: all 0.25s ease;
 }
 
@@ -420,7 +411,7 @@ async function sendReport() {
 .modal-title {
   text-align: center;
   margin-bottom: 14px;
-  color: #e2e8f0;
+  color: var(--text-primary);
 }
 
 .modal-input {
@@ -428,7 +419,7 @@ async function sendReport() {
   padding: 10px;
   border-radius: 10px;
   border: none;
-  background: #0f172a;
+  background: var(--bg-main);
   color: white;
   margin-bottom: 14px;
 }
@@ -440,7 +431,7 @@ async function sendReport() {
 
 .send-btn {
   flex: 1;
-  background: #22c55e;
+  background: var(--green);
   border-radius: 10px;
   padding: 10px;
   border: none;
@@ -448,11 +439,11 @@ async function sendReport() {
 
 .cancel-btn {
   flex: 1;
-  background: #1e293b;
+  background: var(--bg-main);
   border-radius: 10px;
   padding: 10px;
   border: none;
-  color: #94a3b8;
+  color: var(--text-secondary)
 }
 
 .modal-message {
@@ -465,46 +456,61 @@ async function sendReport() {
   display: flex; 
   gap: 6px; 
   margin-bottom: 14px; 
-} 
+  width: 100%;
+}
 
-.add-habit input, .add-habit select { 
+.add-habit input { 
+  flex: 1; 
+}
+
+.add-habit select { 
+  width: 120px; 
+}
+
+.add-habit button {
+  white-space: nowrap;
+}
+
+.add-habit input, 
+.add-habit select { 
   padding: 6px 8px; 
-  border-radius: 8px; 
   border: none; 
-  background: #0f172a; 
-  color: white; 
-  } 
+  background: var(--bg-main);
+  color: white;
+  border-radius: var(--radius-sm);
+}
   
-  .add-habit select { 
-    background: #1e293b 
-    } 
+.add-habit select { 
+  background: var(--bg-card-strong);
+} 
     
-    .add-habit button { 
-      background: #22c55e; 
-      border-radius: 8px; 
-      padding: 6px 12px; 
-      border: none; 
-      cursor: pointer; }
+.add-habit button { 
+  background: var(--green);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px; 
+  border: none; 
+  cursor: pointer; 
+}
 
-      .delete-btn { 
-        position: absolute; 
-        top: 6px; 
-        right: 6px; 
-        background: transparent; 
-        border: none; 
-        font-size: 14px; 
-        cursor: pointer; 
-        color: #f87171; 
-        transition: transform 0.15s ease; 
-        } 
-        
-        .delete-btn:hover { 
-          transform: scale(1.2); 
-          }
+.delete-btn { 
+  position: absolute; 
+  top: 6px; 
+  right: 6px; 
+  background: transparent; 
+  border: none; 
+  font-size: 14px; 
+  cursor: pointer; 
+  color: var(--red);
+  transition: transform 0.15s ease; 
+} 
+    
+.delete-btn:hover { 
+  transform: scale(1.2); 
+}
 
-  .delete-confirm-btn {
+.delete-confirm-btn {
   flex: 1;
-  background: #ef4444;
+  background: var(--red);
   border-radius: 10px;
   padding: 10px;
   border: none;

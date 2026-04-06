@@ -105,15 +105,13 @@ const streak = computed(() => {
 </script>
 
 <style scoped>
+
 .habit-card {
-  background: rgba(30, 41, 59, 0.6); 
-  border-radius: 14px;
-  padding: 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 18px;
+  padding: 18px;
   margin: 10px 0;
-  color: #94a3b8; 
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  color: #94a3b8;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
@@ -129,7 +127,7 @@ const streak = computed(() => {
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   color: #fff;
 }
 
@@ -141,7 +139,7 @@ const streak = computed(() => {
 
 .habit-actions {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
 }
 
@@ -149,17 +147,20 @@ const streak = computed(() => {
   background: linear-gradient(135deg, #22c55e, #4ade80);
   border: none;
   color: black;
-  padding: 8px 12px;
-  border-radius: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+}
+
+.done-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.5);
 }
 
 .done-btn:active {
   transform: scale(0.96);
-  box-shadow: 0 3px 10px rgba(34, 197, 94, 0.3);
 }
 
 .delete-btn {
@@ -189,27 +190,32 @@ const streak = computed(() => {
 }
 
 .day-cell {
-  height: 40px;
+  height: 42px;
+  border-radius: 12px;
+
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(6px);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
+
+  font-weight: 600;
+  font-size: 15px;
+
   transition: all 0.25s ease;
-  background: #1e293b;
-  color: #94a3b8;
 }
 
 .day-cell.level-3 {
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #4ade80);
   color: black;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+
+  box-shadow: 
+    0 0 12px rgba(34, 197, 94, 0.7),
+    0 0 24px rgba(34, 197, 94, 0.4);
 }
 
 .day-cell:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+  transform: translateY(-2px) scale(1.04);
 }
 </style>

@@ -169,43 +169,36 @@ function animateCircle(refValue: any, target: number) {
   font-size: 26px;
   font-weight: 700;
   margin-bottom: 40px;
-
-  color: #94a3b8;
-
+  color: var( --text-secondary);
   text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
 }
 
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-
-  padding: 12px;
-  border-radius: 16px;
-
-    background: rgba(30, 41, 59, 0.6); 
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  gap: 6px;
+  padding: 14px;
+  border-radius: 18px;
+  backdrop-filter: blur(12px);
 }
 
 .day {
   aspect-ratio: 1;
-  border-radius: 8px;
-  font-weight: 800;
-
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 12px;
-  color: #94a3b8;
-
+  color: var(--text-primary);
+  background: var(--bg-card);
+  backdrop-filter: blur(6px);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .day:hover {
-  transform: scale(1.15);
+  transform: translateY(-2px) scale(1.05);
 }
 
 .level-0 {
@@ -213,11 +206,11 @@ function animateCircle(refValue: any, target: number) {
 }
 
 .level-1 {
-  background: #b7f7c1;
+  background: #81ec91;
 }
 
 .level-2 {
-  background: #7df49a;
+  background: #54dd76;
 }
 
 .level-3 {
@@ -234,7 +227,7 @@ function animateCircle(refValue: any, target: number) {
   margin-top: 60px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   align-items: center;
 }
 
@@ -247,8 +240,7 @@ function animateCircle(refValue: any, target: number) {
 .progress-circle {
   --size: 100px;
   --percent: 0;
-  --color: #22c55e;
-
+  --color: var(--green);
   width: var(--size);
   height: var(--size);
   border-radius: 50%;
@@ -271,15 +263,21 @@ function animateCircle(refValue: any, target: number) {
   font-size: 16px;
 }
 
+.progress-circle span {
+  position: relative;
+  z-index: 1;
+}
+
 .progress-circle .label {
   font-size: 12px;
   margin-top: 4px;
-  color: #cbd5f5;
+  color: white;;
 }
 
 .streak {
   font-size: 14px;
-  color: #cbd5f5;
+  font-weight: 600;
+  color: white;
   text-align: center;
   margin-top: 10px;
 }
