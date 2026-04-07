@@ -28,7 +28,6 @@ app.use((req, res, next) => {
   next()
 })
 
-// 🔹 підключаємо роут
 app.use('/', emailRoutes)
 
 app.get('/', (req, res) => {

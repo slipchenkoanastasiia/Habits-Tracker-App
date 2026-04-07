@@ -422,6 +422,7 @@ async function sendReport() {
   background: var(--bg-main);
   color: white;
   margin-bottom: 14px;
+  box-sizing: border-box; 
 }
 
 .modal-buttons {
