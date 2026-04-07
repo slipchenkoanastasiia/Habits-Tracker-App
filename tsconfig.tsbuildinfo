@@ -1,0 +1,1 @@
+{"root":["./src/app.vue","./src/main.ts","./src/vite-env.d.ts","./src/api/email.ts","./src/components/habitgrid.vue","./src/components/habititem.vue","./src/composables/uselocalstorage.ts","./src/data/defaulthabits.ts","./src/router/index.ts","./src/types/habit.ts","./src/utils/generatereporthtml.ts","./src/views/homeview.vue","./src/views/monthlyview.vue"],"version":"5.8.3"}

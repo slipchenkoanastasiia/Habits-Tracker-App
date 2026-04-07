@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var vue_1 = require("vue");
+var App_vue_1 = require("./App.vue");
+require("./style.css");
+var router_1 = require("./router");
+var fontawesome_svg_core_1 = require("@fortawesome/fontawesome-svg-core");
+var vue_fontawesome_1 = require("@fortawesome/vue-fontawesome");
+var free_solid_svg_icons_1 = require("@fortawesome/free-solid-svg-icons");
+fontawesome_svg_core_1.library.add(free_solid_svg_icons_1.faShoePrints, free_solid_svg_icons_1.faRepeat, free_solid_svg_icons_1.faWaterLadder, free_solid_svg_icons_1.faMoon, free_solid_svg_icons_1.faHands, free_solid_svg_icons_1.faMugHot, free_solid_svg_icons_1.faSun, free_solid_svg_icons_1.faMobile, free_solid_svg_icons_1.faBookmark, free_solid_svg_icons_1.faFaceSmileWink);
+var app = (0, vue_1.createApp)(App_vue_1.default);
+app.use(router_1.default);
+app.component('font-awesome-icon', vue_fontawesome_1.FontAwesomeIcon);
+app.mount('#app');
