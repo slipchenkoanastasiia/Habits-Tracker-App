@@ -3,7 +3,6 @@ import { sendEmail } from '../services/emailService.js'
 
 const router = express.Router()
 
-// Функція перевірки валідності email
 const isValidEmail = (email) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
@@ -13,7 +12,6 @@ router.post('/send-report', async (req, res) => {
   const { email, reportHTML } = req.body   
   console.log('📩 BODY:', req.body)
 
-  // Перевірка наявності обов'язкових даних
   if (!email || !reportHTML) {          
     return res.status(400).json({
       success: false,
