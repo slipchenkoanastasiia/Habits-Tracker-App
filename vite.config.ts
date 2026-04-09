@@ -2,16 +2,23 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
-export default defineConfig({
-  base: './',  
-  plugins: [vue()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+export default defineConfig(({ mode }) => {
+  return {
+    base: process.env.VITE_DEPLOY_TARGET === 'gh-pages'
+      ? '/Habits-Tracker-App/'
+      : '/',
+      
+    plugins: [vue()],
+    
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+      extensions: ['.js', '.ts', '.vue'],
     },
-    extensions: ['.js', '.ts', '.vue'],
-  },
-  server: {
-    watch: { usePolling: true },
-  },
+
+    server: {
+      watch: { usePolling: true },
+    },
+  }
 })
