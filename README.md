@@ -41,17 +41,14 @@ The app helps users track daily habits, visualize progress, and send weekly repo
 ### Main Dashboard
 ![Main page](./preview-home.png)
 
----
 
 ### Monthly Calendar
 ![Calendar](./preview-calendar.png)
 
----
 
 ### Email Report Feature
 ![Email modal](./preview-email.png)
 
----
 
 ### 1. Clone the repository
 ```bash
