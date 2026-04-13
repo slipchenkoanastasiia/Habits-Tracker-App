@@ -53,27 +53,34 @@ The app helps users track daily habits, visualize progress, and send weekly repo
 
 ---
 
-## Installation & Setup
-
-Follow these steps to run the project locally:
-
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/your-username/habits-tracker-app.git
+```
 
 ### 2. Navigate to project folder
+```bash
 cd habits-tracker-app
+```
 
 ### 3. Install dependencies
+```bash
 npm install
+```
 
 ### 4. Run development server
+```bash
 npm run dev
+```
 
 The app will be available at: http://localhost:5173
 
 ### 5. Build for production
+```bash
 npm run build
+```
 
 ### 6. Preview production build
+```bash
 npm run preview
+```
