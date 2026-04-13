@@ -1,5 +1,83 @@
-# Vue 3 + TypeScript + Vite
+# Habits Tracker App
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A modern and responsive **habit tracking application** built with Vue 3 + Vite.  
+The app helps users track daily habits, visualize progress, and send weekly reports via email.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Live Demo
+
+👉 https://habits-tracker-app-oojn.onrender.com
+
+## Features
+
+-  Create and track daily habits
+-  Progress statistics & analytics
+-  Monthly calendar view
+-  Drag & drop habit management
+-  Email report system (Nodemailer + Gmail SMTP)
+-  Persistent state management
+-  Responsive design (mobile + desktop)
+
+## Tech Stack
+
+### Frontend
+- Vue 3
+- Vite
+- Vue Router
+- Vue Cal
+- Vuedraggable
+
+### UI
+- FontAwesome Icons
+
+### Backend (Email Service)
+- Node.js
+- Express
+- Nodemailer
+- CORS
+- dotenv
+
+## Application Preview
+
+### Main Dashboard
+![Main page](./preview-home.png)
+
+
+### Monthly Calendar
+![Calendar](./preview-calendar.png)
+
+
+### Email Report Feature
+![Email modal](./preview-email.png)
+
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/habits-tracker-app.git
+```
+
+### 2. Navigate to project folder
+```bash
+cd habits-tracker-app
+```
+
+### 3. Install dependencies
+```bash
+npm install
+```
+
+### 4. Run development server
+```bash
+npm run dev
+```
+
+The app will be available at: http://localhost:5173
+
+### 5. Build for production
+```bash
+npm run build
+```
+
+### 6. Preview production build
+```bash
+npm run preview
+```
