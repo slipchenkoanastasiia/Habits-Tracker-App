@@ -3,13 +3,9 @@
 A modern and responsive **habit tracking application** built with Vue 3 + Vite.  
 The app helps users track daily habits, visualize progress, and send weekly reports via email.
 
----
-
 ## Live Demo
 
 👉 https://habits-tracker-app-oojn.onrender.com
-
----
 
 ## Features
 
@@ -20,8 +16,6 @@ The app helps users track daily habits, visualize progress, and send weekly repo
 -  Email report system (Nodemailer + Gmail SMTP)
 -  Persistent state management
 -  Responsive design (mobile + desktop)
-
----
 
 ## Tech Stack
 
@@ -42,8 +36,6 @@ The app helps users track daily habits, visualize progress, and send weekly repo
 - CORS
 - dotenv
 
----
-
 ## Application Preview
 
 ### Main Dashboard
@@ -63,6 +55,25 @@ The app helps users track daily habits, visualize progress, and send weekly repo
 
 ## Installation & Setup
 
+Follow these steps to run the project locally:
+
+### 1. Clone the repository
 ```bash
-# Install dependencies
+git clone https://github.com/your-username/habits-tracker-app.git
+
+### 2. Navigate to project folder
+cd habits-tracker-app
+
+### 3. Install dependencies
 npm install
+
+### 4. Run development server
+npm run dev
+
+The app will be available at: http://localhost:5173
+
+### 5. Build for production
+npm run build
+
+### 6. Preview production build
+npm run preview
