@@ -6,11 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host 0.0.0.0 --port 4173"
   },
   "dependencies": {
-    "vite": "^5.2.10",
-    "@vitejs/plugin-vue": "^5.0.4",
+    "vue": "^3.5.17",
+    "vue-router": "^5.0.4",
+    "vue-cal": "^4.10.2",
+    "vuedraggable": "^4.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
@@ -18,17 +20,15 @@
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "nodemailer": "^7.0.5",
-    "uuid": "^13.0.0",
-    "vue": "^3.5.17",
-    "vue-cal": "^4.10.2",
-    "vue-router": "^5.0.4",
-    "vuedraggable": "^4.1.0"
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "vite": "^5.2.10",
+    "@vitejs/plugin-vue": "^5.0.4",
     "@types/node": "^24.0.14",
     "@vue/tsconfig": "^0.7.0",
-    "gh-pages": "^5.0.0",
     "typescript": "~5.8.3",
-    "vue-tsc": "^2.2.12"
+    "vue-tsc": "^2.2.12",
+    "gh-pages": "^5.0.0"
   }
 }
