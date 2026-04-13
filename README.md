@@ -3,13 +3,13 @@
 A modern and responsive **habit tracking application** built with Vue 3 + Vite.  
 The app helps users track daily habits, visualize progress, and send reports via email.
 
----
+
 
 ## Live Demo
 
 👉 https://habits-tracker-app-oojn.onrender.com
 
----
+
 
 ## Features
 
@@ -21,7 +21,7 @@ The app helps users track daily habits, visualize progress, and send reports via
 - Persistent state management
 - Responsive design (mobile + desktop)
 
----
+
 
 ## Tech Stack
 
