@@ -23,21 +23,32 @@
       <button @click="addHabit">Add</button>
     </div>
 
-    <draggable
-      v-model="habits"
-      item-key="id"
-      class="habit-list"
-      ghost-class="ghost"
-      animation="200"
-    >
-      <template #item="{ element }">
-        <HabitItem
-          :habit="element"
-          @toggle-done="toggleDone"
-          @delete-habit="deleteHabit"
-        />
-      </template>
-    </draggable>
+<draggable
+  v-if="activeTab === 'all'"
+  v-model="habits"
+  item-key="id"
+  class="habit-list"
+  ghost-class="ghost"
+  animation="200"
+>
+  <template #item="{ element }">
+    <HabitItem
+      :habit="element"
+      @toggle-done="toggleDone"
+      @delete-habit="deleteHabit"
+    />
+  </template>
+</draggable>
+
+<div v-else class="habit-list">
+  <HabitItem
+    v-for="h in filteredHabits"
+    :key="h.id"
+    :habit="h"
+    @toggle-done="toggleDone"
+    @delete-habit="deleteHabit"
+  />
+</div>
 
     <div class="actions">
       <button class="secondary" @click="goToMonthly">Monthly Overview</button>
