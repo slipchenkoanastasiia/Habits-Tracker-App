@@ -10,7 +10,13 @@
         <button class="done-btn" @click="toggleToday">
           {{ habitDone ? '✓ Done' : 'Mark Done' }}
         </button>
-        <button class="delete-btn" @click="$emit('delete-habit', habitId)">🗑️</button>
+
+        <button
+          class="delete-btn"
+          @click="$emit('delete-habit', habitId)"
+        >
+          🗑️
+        </button>
       </div>
     </div>
 
@@ -37,46 +43,32 @@
 import { computed } from 'vue'
 
 const props = defineProps<{
-  habitId: string,
-  history: Record<string, boolean>,
-  habitName: string,
+  habitId: string
+  history: Record<string, boolean>
+  habitName: string
   habitDone: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'toggle', date: string, value: boolean): void
-  (e: 'toggleToday', id: string): void
+  (e: 'toggle-today', id: string): void
   (e: 'delete-habit', id: string): void
 }>()
 
 function getLast7Days() {
   const days: string[] = []
   const today = new Date()
+
   for (let i = 6; i >= 0; i--) {
     const d = new Date()
     d.setDate(today.getDate() - i)
     days.push(d.toLocaleDateString('en-CA'))
   }
+
   return days
 }
 
 const days = computed(() => getLast7Days())
-
-function getLevel(value: boolean) {
-  return value ? 'level-3' : 'level-0'
-}
-
-function formatDate(date: string) {
-  const d = new Date(date)
-  const day = String(d.getDate()).padStart(2, '0')
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  return `${day}.${month}`
-}
-
-function getDayLetter(date: string) {
-  const d = new Date(date)
-  return d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)
-}
 
 function handleClick(day: string) {
   const current = props.history[day] ?? false
@@ -84,14 +76,26 @@ function handleClick(day: string) {
 }
 
 function toggleToday() {
-  emit('toggleToday', props.habitId)
+  emit('toggle-today', props.habitId)
+}
+
+function getLevel(value: boolean) {
+  return value ? 'level-3' : 'level-0'
+}
+
+function formatDate(date: string) {
+  const d = new Date(date)
+  return `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
+function getDayLetter(date: string) {
+  const d = new Date(date)
+  return d.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)
 }
 
 const progress = computed(() => {
   const values = days.value.map(d => props.history[d] ? 1 : 0)
-  const total = values.length
-  const done = values.reduce((a, b) => a + b, 0)
-  return Math.round((done / total) * 100)
+  return Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 100)
 })
 
 const streak = computed(() => {

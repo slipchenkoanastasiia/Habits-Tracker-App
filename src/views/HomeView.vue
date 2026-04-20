@@ -23,6 +23,26 @@
       <button @click="addHabit">Add</button>
     </div>
 
+    <div class="stats-bar">
+  <span>⭐ {{ totalXP }} XP</span>
+  <span>🔥 {{ currentStreak }} days</span>
+</div>
+
+<div class="xp-layer">
+<div
+  v-for="a in xpAnimations"
+  :key="a.id"
+  class="xp-fly"
+  :style="{ left: a.x + 'px', top: a.y + 'px' }"
+>
+    +{{ a.value }} XP
+  </div>
+</div>
+
+<div v-if="isPerfectDay" class="perfect-day">
+  🎉 Perfect day
+</div>
+
 <draggable
   v-if="activeTab === 'all'"
   v-model="habits"
@@ -100,6 +120,10 @@ import { v4 as uuidv4 } from 'uuid'
 import draggable from 'vuedraggable'
 import { generateWeeklyReportHTML } from '@/utils/generateReportHTML'
 
+const totalXP = ref(0)
+const lastActiveDate = ref<string | null>(null)
+const currentStreak = ref(0)
+
 const STORAGE_KEY = 'habits-tracker-data'
 
 const newHabitName = ref<string>('')
@@ -117,6 +141,18 @@ const router = useRouter()
 
 const showDeleteModal = ref(false)
 const habitToDelete = ref<string | null>(null)
+
+const isPerfectDay = computed(() => {
+  const today = getToday()
+  return habits.value.length > 0 &&
+    habits.value.every(h => h.history?.[today])
+})
+
+const xpAnimations = ref<{ id: string, value: number, x: number, y: number }[]>([])
+
+function getToday() {
+  return getLocalDate(new Date())
+}
 
 function deleteHabit(id: string) {
   habitToDelete.value = id
@@ -194,13 +230,50 @@ watch(email, (v) => {
   localStorage.setItem('habits-tracker-email', v)
 })
 
-function toggleDone(id: string) {
+function toggleDone(id: string, event?: MouseEvent) {
   const habit = habits.value.find(h => h.id === id)
   if (!habit) return
-  const today = getLocalDate(new Date())
+
+  const today = getToday()
   habit.history = habit.history || {}
-  habit.history[today] = !habit.history[today]
-  habit.doneToday = habit.history[today]
+
+  const newValue = !habit.history[today]
+  habit.history[today] = newValue
+  habit.doneToday = newValue
+
+  if (newValue) {
+    totalXP.value += 10
+
+    const rect = (event?.currentTarget as HTMLElement)?.getBoundingClientRect()
+
+    const animId = crypto.randomUUID()
+
+    xpAnimations.value.push({
+      id: animId,
+      value: 10,
+      x: rect ? rect.left + rect.width / 2 : window.innerWidth / 2,
+      y: rect ? rect.top + rect.height / 2 : window.innerHeight / 2
+    })
+
+    setTimeout(() => {
+      xpAnimations.value = xpAnimations.value.filter(a => a.id !== animId)
+    }, 900)
+  }
+
+  if (newValue && lastActiveDate.value !== today) {
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    const y = getLocalDate(yesterday)
+
+    if (lastActiveDate.value === y) {
+      currentStreak.value++
+    } else {
+      currentStreak.value = 1
+    }
+
+    lastActiveDate.value = today
+  }
 }
 
 const filteredHabits = computed(() => {
@@ -542,6 +615,84 @@ async function sendReport() {
 
 .habit-list > *:active {
   cursor: grabbing;
+}
+
+.stats-bar {
+  position: sticky;
+  top: 12px;
+
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 10px 14px;
+  margin-bottom: 12px;
+
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+
+  border-radius: 14px;
+
+  border: 1px solid rgba(59, 130, 246, 0.25);
+
+  box-shadow:
+    0 0 10px rgba(59, 130, 246, 0.25),
+    inset 0 0 10px rgba(255, 255, 255, 0.03);
+
+  font-size: 13px;
+  color: #cbd5e1;
+
+  z-index: 50;
+}
+
+.perfect-day {
+  text-align: center;
+  font-size: 13px;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+
+.xp-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999999;
+  overflow: visible;
+}
+
+.xp-fly {
+  position: fixed;
+  z-index: 999999;
+
+  font-weight: 700;
+  font-size: 14px;
+
+  color: #22c55e;
+  text-shadow: 0 0 12px rgba(34, 197, 94, 0.7);
+
+  pointer-events: none;
+
+  transform: translate(-50%, -50%);
+  animation: xpFloat 900ms ease-out forwards;
+}
+
+@keyframes xpFloat {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translate(-50%, -140px)
+      translateX(10px)
+      scale(1.4);
+  }
 }
 </style>
 

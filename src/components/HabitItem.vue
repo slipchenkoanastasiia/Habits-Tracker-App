@@ -19,20 +19,22 @@ import HabitGrid from './HabitGrid.vue'
 
 const props = defineProps<{ habit: Habit }>()
 
-const historySafe = computed(() => props.habit.history || {})
+const historySafe = computed<Record<string, boolean>>(
+  () => props.habit.history || {}
+)
 
 const emit = defineEmits<{
-  (e: 'toggle-done', id: string): void
-  (e: 'toggle-day', date: string): void
+  (e: 'toggle-done', id: string, event?: MouseEvent): void
+  (e: 'toggle-day', date: string, value: boolean): void
   (e: 'delete-habit', id: string): void
 }>()
 
-function toggleDone() {
-  emit('toggle-done', props.habit.id)
+function toggleDone(event: MouseEvent) {
+  emit('toggle-done', props.habit.id, event)
 }
 
-function toggleDay(date: string) {
-  emit('toggle-day', date)
+function toggleDay(date: string, value: boolean) {
+  emit('toggle-day', date, value)
 }
 
 function deleteHabit() {
