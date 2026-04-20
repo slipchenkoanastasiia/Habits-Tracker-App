@@ -27,6 +27,7 @@
 
 ##  Features
 
+
 -  Create and track daily habits
 -  Progress statistics & analytics
 -  Monthly calendar view
@@ -34,6 +35,10 @@
 -  Email report system (Nodemailer + Gmail SMTP)
 -  Persistent state management
 -  Responsive design (mobile + desktop)
+-  XP & streak system with gamification
+-  Perfect day detection & visual feedback
+-  XP animation on habit completion
+
 
 
 
