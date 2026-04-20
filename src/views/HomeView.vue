@@ -40,7 +40,7 @@
 </div>
 
 <div v-if="isPerfectDay" class="perfect-day">
-  🎉 Perfect day
+  ⭐ Perfect day
 </div>
 
 <draggable
